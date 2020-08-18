@@ -1,0 +1,99 @@
+# 应用信息
+app:
+  name: &app_name wh_starter
+  port: &app_port 8080
+  zkspring: &app_zkspring zk:2181
+  dubbo_zk: &app_dubbo_zk zk:2181?backup=zk:2181
+  dubbo_port: &app_dubbo_port 18080
+  mysql_connection_string:  &app_mysql_connection_string jdbc:mysql://192.168.8.13:3306/crowd_selling?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+  mysql_username:  &app_mysql_username root
+  mysql_password:  &app_mysql_password 123456
+  swagger_basePackage: &app_swagger_basePackage com.wh.service.starter.web.host.controller
+
+
+# 应用信息结束
+
+server:
+  port: *app_port
+  servlet:
+    context-path: /
+    path: /
+
+spring:
+  application:
+    name: *app_name
+  cloud:
+    zookeeper:
+      connect-string: *app_zkspring
+      discovery.k8s: true
+  jackson:
+    time-zone: GMT+8
+    mapper:
+      accept_case_insensitive_properties: true
+  datasource:
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: *app_mysql_connection_string
+      username: *app_mysql_username
+      password: *app_mysql_password
+      initial-size: 5
+      max-active: 20
+      min-idle: 5
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      validation-query: SELECT 1
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      filters: stat,slf4j
+      min-evictable-idle-time-millis: 300000
+
+# spring boot Actuator
+management:
+  security:
+    enabled: false
+
+# dubbo configuration start
+dubbo:
+  application:
+    id: *app_name
+    name: *app_name
+    default: true
+  registry:
+    address: *app_dubbo_zk
+    protocol: zookeeper
+    client: curator
+  protocol:
+    name: dubbo
+    port: *app_dubbo_port
+  consumer:
+    check: false
+  provider:
+    loadbalance: leastactive
+    retries: 0
+    timeout: 1200000
+    filter: consumeLogFilter
+
+# dubbo configuration end
+
+# mybatis
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+# swagger
+swagger:
+  basePackage: *app_swagger_basePackage
+# swagger end
+
+# dev
+

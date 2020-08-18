@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.project.base</groupId>
+		<artifactId>project-base-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+
+	<groupId>com.shihang.mall</groupId>
+	<artifactId>wh_starter</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<modules>
+		<module>wh_starter-model</module>
+		<module>wh_starter-intf</module>
+		<module>wh_starter-dao</module>
+		<module>wh_starter-biz</module>
+		<module>wh_starter-svc</module>
+		<module>wh_starter-web-host</module>
+	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-dependency</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-mybatis</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-model</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-biz</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-dubbo</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-rpc-patch-log</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.project.base</groupId>
+				<artifactId>project-base-web</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.shihang</groupId>
+				<artifactId>shihang-rpc-spring-boot-starter</artifactId>
+				<version>1.0.1-RC1</version>
+			</dependency>
+
+			<!-- 日志相关 -->
+
+			<dependency>
+				<groupId>com.shihang</groupId>
+				<artifactId>shihang-log-log4j2-appender</artifactId>
+				<version>1.0.6-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>2.3</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+
+
+</project>

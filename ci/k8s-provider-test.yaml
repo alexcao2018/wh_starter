@@ -1,0 +1,3 @@
+这是空文件
+1、需要在jenkins 构建的时候，将打印出来的yaml文件贴进来。
+2、修改 image: harbor.suiyi.com.cn/api-mall/xxxxxx:{version} , 镜像的版本替换为：{version}

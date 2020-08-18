@@ -1,0 +1,75 @@
+node{
+    def appName = 'wh_starter'
+	def appJarName = ''
+	def jarFilePath = 'wh_starter-web-host/target'
+	def mvnProfile = 'k8s'
+
+	def harborServer = 'harbor.34580.com'
+	def harborUser = 'harboruser'
+	def harborPwd  = 'Sy123456'
+
+	def dockerImageModule = 'api-mall'
+	def dockerImageVersion = sh (script: 'date -d today +"%Y%m%d-%H-%M-%S"',  returnStdout: true ).trim()
+	def dockerFileName = 'Dockerfile'
+	def dockerImageTag = harborServer + '/' + dockerImageModule + '/' + appName + ':' + dockerImageVersion
+
+	def k8sContainerPort = 8080
+	def k8sContainerPortDubbo = 18080
+
+	def tingyunJarName = 'tingyun-agent-java.jar'
+	def tingyunPropertyFileName = 'tingyun.properties'
+
+	def workspace = sh (
+		script: 'cd ../${JOB_NAME}@script && pwd',
+		returnStdout: true
+	).trim()
+	def dockerImageResourceDir = workspace + "/image-resource"
+
+	dir(workspace){
+
+		stage('Clean'){
+			echo 'clean'
+			sh "mvn clean"
+		}
+
+		stage('Build'){
+			echo 'build'
+			sh "mvn package -U -P ${mvnProfile}"
+		}
+
+		stage('Prepare Docker') {
+			sh "rm -rf ${dockerImageResourceDir} && mkdir ${dockerImageResourceDir}"
+			appJarName = sh(
+                    script: "cd ${jarFilePath} && find  *[^sources].jar",
+                    returnStdout: true
+            ).trim()
+			sh "cp ${jarFilePath}/${appJarName} ${dockerImageResourceDir}"
+            sh "cp ci/${dockerFileName} ${dockerImageResourceDir}"
+            sh "cp ci/${tingyunPropertyFileName} ${dockerImageResourceDir}"
+		}		
+	}
+
+	dir(dockerImageResourceDir) {
+		stage('Docker build') {
+            echo '--------- docker image resource begin --------------'
+            sh 'ls -l'
+            echo '--------- docker image resource end   --------------'
+
+            sh "sed -i 's/@app_name/${appName}/g' ${tingyunPropertyFileName} "
+            sh "sed -i 's/@app_jar_file/${appJarName}/g' ${dockerFileName} "
+			sh "sed -i 's/@tingyun_jar_file/${tingyunJarName}/g' Dockerfile "
+            sh "sed -i 's/@tingyun_property_file/${tingyunPropertyFileName}/g' ${dockerFileName} "
+            sh "sed -i 's/@containerPort/${k8sContainerPort}/g' ${dockerFileName} "
+			sh "sed -i 's/@app_name/${appName}/g' ${dockerFileName} "
+            sh "docker build --no-cache -t ${dockerImageTag} ."
+        }
+		stage('Docker push'){
+			echo 'Docker push'
+			sh "docker login -u ${harborUser} -p ${harborPwd} ${harborServer}"
+			sh "docker push ${dockerImageTag}"
+			sh "docker logout ${harborServer}"
+		}
+	}
+	
+
+}

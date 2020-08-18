@@ -1,0 +1,61 @@
+kind: Deployment
+apiVersion: apps/v1beta2
+metadata:
+  name: @{appName}   #唯一
+  namespace: @env
+spec:
+  replicas: 1
+  selector:
+      matchLabels: # @1 要匹配的标签,与@2 要保持一致
+        app: @{appName}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1      #滚动升级时会先启动1个pod。这个值可以设置为整数和百分比,如果是使用百分比，则使用向上取整 参考 java.lang.Math.ceil
+      maxUnavailable: 1 #滚动升级时允许的最大Unavailable的pod个数。这个值可以使用整数和百分比，如果是使用百分比，则向下取整数， 参考 java.lang.Math.floor
+  template:
+    metadata:
+      labels:
+        app: @{appName} # @2 与上面 @1 要保持一致
+    spec:
+      containers:
+        - name: @{appName} #容器名称, 在一个pod中是唯一的,DNS_LABEL
+          image: @{dockerImageTag}  # Docker镜像名称
+          imagePullPolicy: Always  #镜像拉取策略,Always | Never | IfNotPersent，默认 Always
+          ports: # 从container中暴露的端口号
+            - containerPort: @{k8sContainerPort} #容器端口
+          volumeMounts:
+            - mountPath: /opt/app/conf
+              name: config-base
+          env:
+            - name: SHLF_HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP  #部署的k8s node IP
+            - name: SHLF_HOST_PORT
+              value: '@{k8sNodePort}'   # 这里设置的与nodeport一致,单引号不可以忽略，这里的值必须为字符串
+            - name: SHLF_RANDOM  # 这里我们使用随机数值，用于k8s自动重新构建
+              value: '@random'
+      volumes:
+      - name: config-base
+        hostPath:
+          path: /opt/location/@{appName}
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: @{appName}
+  namespace: @env
+  labels:
+    app: @{appName}
+spec:
+  type: NodePort
+  ports:
+  - port: @{k8sContainerPort}
+    nodePort: @{k8sNodePort}
+    targetPort: @{k8sContainerPort}
+    protocol: TCP
+    name: @{appName}-port
+  selector:
+    app: @{appName}
