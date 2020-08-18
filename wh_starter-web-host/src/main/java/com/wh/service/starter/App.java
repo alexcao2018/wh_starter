@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan({"com.wh.service.starter"
-		,"com.project.base.web"
+		//,"com.project.base.web"
 		, "com.project.base.mybatis"
 		})
 @MapperScan("com.wh.service.starter.dao.db.table")

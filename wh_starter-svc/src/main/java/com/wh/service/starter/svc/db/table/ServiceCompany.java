@@ -3,6 +3,7 @@
 	import com.wh.service.starter.biz.db.table.BizCompany;
 	import com.wh.service.starter.intf.db.table.IServiceCompany;
 	import com.alibaba.dubbo.config.annotation.Service;
+	import com.wh.service.starter.model.db.table.Company;
 	import org.springframework.beans.factory.annotation.Autowired;
 	
 	@Service(version = "1.0.0", connections = 2)
@@ -10,6 +11,7 @@
 	{
 		@Autowired
 		private BizCompany bizCompany;
+
 
 	}
 	

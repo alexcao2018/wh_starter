@@ -60,8 +60,7 @@ pagehelper:
   params: count=countSql
 
 # swagger
-swagger:
-  basePackage: com.wh.service.starter.web.host.controller
+
 # swagger end
 
 # dev
